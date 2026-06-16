@@ -1,0 +1,10 @@
+{
+  "workbook_id": "wb_123",
+  "sheet": "Sheet1",
+  "start_cell": "A4",
+  "rows": [
+    {"Name": "Bob", "Amount": 20},
+    {"Name": "Carol", "Amount": 30}
+  ],
+  "overwrite": "error"
+}

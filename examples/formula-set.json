@@ -1,0 +1,8 @@
+{
+  "workbook_id": "wb_123",
+  "sheet": "Sheet1",
+  "formulas": {
+    "C1": "=SUM(A2:B2)",
+    "C2": "=A2&B2"
+  }
+}

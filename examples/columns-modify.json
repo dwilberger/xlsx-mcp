@@ -1,0 +1,8 @@
+{
+  "workbook_id": "wb_123",
+  "sheet": "Sheet1",
+  "start_column": "C",
+  "columns": [
+    ["=A1+B1", "=A2+B2"]
+  ]
+}

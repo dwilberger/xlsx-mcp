@@ -1,0 +1,10 @@
+{
+  "workbook_id": "wb_123",
+  "sheet": "Sheet1",
+  "cells": {
+    "A1": "Name",
+    "B1": "Amount",
+    "A2": "Alice",
+    "B2": 123.45
+  }
+}

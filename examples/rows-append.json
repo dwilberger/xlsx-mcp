@@ -1,0 +1,8 @@
+{
+  "workbook_id": "wb_123",
+  "sheet": "Sheet1",
+  "rows": [
+    ["Bob", 20],
+    ["Carol", 30]
+  ]
+}
