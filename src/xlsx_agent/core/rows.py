@@ -83,6 +83,63 @@ def rows_delete(
     }
 
 
+def row_dimensions_set(
+    store: WorkbookStore,
+    *,
+    workbook_id: str,
+    sheet: str,
+    start_row: int,
+    count: int = 1,
+    height: float | None = None,
+    hidden: bool | None = None,
+) -> dict[str, object]:
+    session = store.get(workbook_id)
+    if session.read_only:
+        raise XlsxAgentError(
+            code="unsupported_operation",
+            message=f"Workbook '{workbook_id}' was opened in read-only mode.",
+        )
+    if start_row < 1:
+        raise XlsxAgentError(
+            code="invalid_input",
+            message="start_row must be greater than or equal to 1.",
+        )
+    if count < 1:
+        raise XlsxAgentError(
+            code="invalid_input",
+            message="count must be greater than or equal to 1.",
+        )
+    if height is not None and height <= 0:
+        raise XlsxAgentError(
+            code="invalid_input",
+            message="height must be greater than 0.",
+        )
+    if height is None and hidden is None:
+        raise XlsxAgentError(
+            code="invalid_input",
+            message="Specify height or hidden.",
+        )
+
+    worksheet = get_worksheet(session.workbook, sheet)
+    for row in range(start_row, start_row + count):
+        dimension = worksheet.row_dimensions[row]
+        if height is not None:
+            dimension.height = height
+        if hidden is not None:
+            dimension.hidden = hidden
+
+    session.dirty = True
+    return {
+        "workbook_id": workbook_id,
+        "sheet": sheet,
+        "start_row": start_row,
+        "count": count,
+        "height": height,
+        "hidden": hidden,
+        "dirty": session.dirty,
+    }
+
+
 def rows_write(
     store: WorkbookStore,
     *,

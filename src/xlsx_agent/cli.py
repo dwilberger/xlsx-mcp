@@ -9,7 +9,7 @@ from pydantic import BaseModel, ValidationError
 
 from xlsx_agent import __version__
 from xlsx_agent.core.cell import cell_read, cell_write
-from xlsx_agent.core.columns import columns_delete, columns_insert
+from xlsx_agent.core.columns import column_dimensions_set, columns_delete, columns_insert
 from xlsx_agent.core.comments import comment_add, comment_list, comment_read, comment_remove
 from xlsx_agent.core.data import (
     blanks_find,
@@ -53,7 +53,7 @@ from xlsx_agent.core.page_setup import page_margins_set, page_setup_set
 from xlsx_agent.core.print_area import print_area_set, print_titles_set
 from xlsx_agent.core.range import range_clear, range_write
 from xlsx_agent.core.read import range_read
-from xlsx_agent.core.rows import rows_delete, rows_insert, rows_write
+from xlsx_agent.core.rows import row_dimensions_set, rows_delete, rows_insert, rows_write
 from xlsx_agent.core.sheet_ops import sheet_copy, sheet_query, sheet_used_range_get
 from xlsx_agent.core.sheets import sheet_create, sheet_delete, sheet_list, sheet_rename
 from xlsx_agent.core.store import WorkbookStore
@@ -77,6 +77,7 @@ from xlsx_agent.schemas.advanced import (
     BlanksFindRequest,
     CellReadRequest,
     CellWriteRequest,
+    ColumnDimensionsSetRequest,
     ColumnsDeleteRequest,
     ColumnsInsertRequest,
     ColumnsModifyRequest,
@@ -125,6 +126,7 @@ from xlsx_agent.schemas.advanced import (
     RangeStyleSetRequest,
     RangeToCsvRequest,
     RangeWriteRequest,
+    RowDimensionsSetRequest,
     RowsDeleteRequest,
     RowsInsertRequest,
     RowsModifyRequest,
@@ -289,6 +291,12 @@ def _dispatch_run_command(command: str, payload: dict[str, Any]) -> Any:
     if command == "columns_delete":
         request = ColumnsDeleteRequest.model_validate(payload)
         return columns_delete(store, workbook_id=request.workbook_id, sheet=request.sheet, start_column=request.start_column, count=request.count)
+    if command == "row_dimensions_set":
+        request = RowDimensionsSetRequest.model_validate(payload)
+        return row_dimensions_set(store, workbook_id=request.workbook_id, sheet=request.sheet, start_row=request.start_row, count=request.count, height=request.height, hidden=request.hidden)
+    if command == "column_dimensions_set":
+        request = ColumnDimensionsSetRequest.model_validate(payload)
+        return column_dimensions_set(store, workbook_id=request.workbook_id, sheet=request.sheet, start_column=request.start_column, count=request.count, width=request.width, hidden=request.hidden)
     if command == "sheet_copy":
         request = SheetCopyRequest.model_validate(payload)
         return sheet_copy(store, workbook_id=request.workbook_id, sheet=request.sheet, new_name=request.new_name, position=request.position)
@@ -387,13 +395,13 @@ def _dispatch_run_command(command: str, payload: dict[str, Any]) -> Any:
         return workbook_metadata(store, workbook_id=request.workbook_id)
     if command == "range_style_set":
         request = RangeStyleSetRequest.model_validate(payload)
-        return range_style_set(store, workbook_id=request.workbook_id, sheet=request.sheet, range=request.range, font_name=request.font_name, font_size=request.font_size, bold=request.bold, italic=request.italic, underline=request.underline, fill_color=request.fill_color, font_color=request.font_color, number_format=request.number_format, alignment=request.alignment)
+        return range_style_set(store, workbook_id=request.workbook_id, sheet=request.sheet, range=request.range, font_name=request.font_name, font_size=request.font_size, bold=request.bold, italic=request.italic, underline=request.underline, fill_color=request.fill_color, font_color=request.font_color, number_format=request.number_format, alignment=request.alignment, vertical_alignment=request.vertical_alignment, wrap_text=request.wrap_text, text_rotation=request.text_rotation, shrink_to_fit=request.shrink_to_fit, indent=request.indent, border_style=request.border_style, border_color=request.border_color)
     if command == "conditional_formatting_list":
         request = ConditionalFormattingListRequest.model_validate(payload)
         return conditional_formatting_list(store, workbook_id=request.workbook_id, sheet=request.sheet)
     if command == "conditional_formatting_add":
         request = ConditionalFormattingAddRequest.model_validate(payload)
-        return conditional_formatting_add(store, workbook_id=request.workbook_id, sheet=request.sheet, range=request.range, type=request.type, formula=request.formula, priority=request.priority)
+        return conditional_formatting_add(store, workbook_id=request.workbook_id, sheet=request.sheet, range=request.range, type=request.type, formula=request.formula, formula2=request.formula2, operator=request.operator, priority=request.priority, fill_color=request.fill_color, font_color=request.font_color, stop_if_true=request.stop_if_true, min_color=request.min_color, mid_color=request.mid_color, max_color=request.max_color, data_bar_color=request.data_bar_color, icon_style=request.icon_style)
     if command == "conditional_formatting_remove":
         request = ConditionalFormattingRemoveRequest.model_validate(payload)
         return conditional_formatting_remove(store, workbook_id=request.workbook_id, sheet=request.sheet, range=request.range)

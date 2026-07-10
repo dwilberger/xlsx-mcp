@@ -93,3 +93,23 @@ def test_run_cells_write_and_range_read(tmp_path: Path) -> None:
     assert read_result.exit_code == 0
     read_payload = json.loads(read_result.stdout)
     assert read_payload["data"]["data"] == [["Bob", 20]]
+
+
+def test_run_row_dimensions_set(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "sample.xlsx"
+    open_input = tmp_path / "open.json"
+    dimensions_input = tmp_path / "dimensions.json"
+    _create_workbook(workbook_path)
+    _write_json(open_input, {"path": str(workbook_path)})
+
+    open_result = runner.invoke(app, ["run", "workbook_open", "--input", str(open_input)])
+    workbook_id = json.loads(open_result.stdout)["data"]["workbook_id"]
+    _write_json(
+        dimensions_input,
+        {"workbook_id": workbook_id, "sheet": "Sheet1", "start_row": 1, "height": 28},
+    )
+
+    result = runner.invoke(app, ["run", "row_dimensions_set", "--input", str(dimensions_input)])
+
+    assert result.exit_code == 0
+    assert json.loads(result.stdout)["data"]["height"] == 28

@@ -6,7 +6,12 @@ from openpyxl import load_workbook
 
 from xlsx_agent.mcp_server import (
     cells_write,
+    column_dimensions_set,
+    conditional_formatting_add,
+    conditional_formatting_list,
     range_read,
+    range_style_set,
+    row_dimensions_set,
     rows_append,
     sheet_list,
     workbook_close,
@@ -89,5 +94,42 @@ def test_mcp_returns_validation_error_for_invalid_format(copied_workbook_path: P
     assert read_result["ok"] is False
     assert read_result["error"]["code"] == "invalid_input"
     assert read_result["error"]["details"]["errors"]
+
+    workbook_close(workbook_id=workbook_id, force=True)
+
+
+def test_mcp_exposes_style_dimensions_and_conditional_formatting(copied_workbook_path: Path) -> None:
+    open_result = workbook_open(path=str(copied_workbook_path))
+    workbook_id = open_result["data"]["workbook_id"]
+
+    assert range_style_set(
+        workbook_id=workbook_id,
+        sheet="Sheet1",
+        range="A1:B1",
+        wrap_text=True,
+        border_style="thin",
+    )["ok"] is True
+    assert row_dimensions_set(
+        workbook_id=workbook_id,
+        sheet="Sheet1",
+        start_row=1,
+        height=30,
+    )["ok"] is True
+    assert column_dimensions_set(
+        workbook_id=workbook_id,
+        sheet="Sheet1",
+        start_column="A",
+        width=22,
+    )["ok"] is True
+    assert conditional_formatting_add(
+        workbook_id=workbook_id,
+        sheet="Sheet1",
+        range="B2:B10",
+        type="dataBar",
+    )["ok"] is True
+
+    listed = conditional_formatting_list(workbook_id=workbook_id, sheet="Sheet1")
+    assert listed["ok"] is True
+    assert listed["data"]["rules"][0]["type"] == "dataBar"
 
     workbook_close(workbook_id=workbook_id, force=True)

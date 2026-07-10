@@ -54,6 +54,15 @@ class RowsWriteRequest(BaseModel):
     rows: list[list[object] | dict[str, object]] = Field(default_factory=list)
 
 
+class RowDimensionsSetRequest(BaseModel):
+    workbook_id: str
+    sheet: str
+    start_row: int
+    count: int = 1
+    height: float | None = None
+    hidden: bool | None = None
+
+
 class ColumnsInsertRequest(BaseModel):
     workbook_id: str
     sheet: str
@@ -66,6 +75,15 @@ class ColumnsDeleteRequest(BaseModel):
     sheet: str
     start_column: int | str
     count: int = 1
+
+
+class ColumnDimensionsSetRequest(BaseModel):
+    workbook_id: str
+    sheet: str
+    start_column: int | str
+    count: int = 1
+    width: float | None = None
+    hidden: bool | None = None
 
 
 class SheetDeleteRequest(BaseModel):
@@ -294,6 +312,13 @@ class RangeStyleSetRequest(BaseModel):
     font_color: str | None = None
     number_format: str | None = None
     alignment: str | None = None
+    vertical_alignment: str | None = None
+    wrap_text: bool | None = None
+    text_rotation: int | None = None
+    shrink_to_fit: bool | None = None
+    indent: int | None = None
+    border_style: str | None = None
+    border_color: str | None = None
 
 
 class ConditionalFormattingListRequest(BaseModel):
@@ -307,7 +332,17 @@ class ConditionalFormattingAddRequest(BaseModel):
     range: str
     type: str
     formula: str | None = None
+    formula2: str | None = None
+    operator: str = "equal"
     priority: int = 1
+    fill_color: str | None = None
+    font_color: str | None = None
+    stop_if_true: bool | None = None
+    min_color: str = "FFF8696B"
+    mid_color: str = "FFFFEB84"
+    max_color: str = "FF63BE7B"
+    data_bar_color: str = "FF638EC6"
+    icon_style: str = "3TrafficLights1"
 
 
 class ConditionalFormattingRemoveRequest(BaseModel):

@@ -22,7 +22,7 @@ Spreadsheets are everywhere in real workflows -- financial models, reports, data
 
 ## What it is
 
-- **A focused automation layer** -- 80 commands covering workbook, sheet, cell, range, row, column, formula, table, validation, merge, formatting, export, diff, image, comment, layout, and print workflows.
+- **A focused automation layer** -- 82 commands covering workbook, sheet, cell, range, row, column, formula, table, validation, merge, formatting, export, diff, image, comment, layout, and print workflows.
 - **Two interfaces, one core** -- MCP server (stateful, recommended for real workflows) and CLI runner (stateless, good for one-off commands and testing).
 - **Deterministic JSON contracts** -- every request and response is schema-defined. No guessing.
 - **Explicit by design** -- writes stay in memory until you call save. Dirty workbooks refuse to close. No auto-save, no implicit anything.
@@ -115,15 +115,15 @@ All commands are available through MCP tools and through `xlsx-mcp run <command>
 | Sheets | `sheet_list`, `sheet_create`, `sheet_delete`, `sheet_rename`, `sheet_copy`, `sheet_used_range_get`, `sheet_query` |
 | Cells | `cell_read`, `cell_write` |
 | Ranges | `range_read`, `range_write`, `range_clear`, `range_find`, `range_replace`, `range_sort`, `range_deduplicate`, `range_style_set` |
-| Rows | `cells_write`, `rows_append`, `rows_write`, `rows_modify`, `rows_insert`, `rows_delete`, `table_write` |
-| Columns | `columns_insert`, `columns_delete`, `columns_modify` |
+| Rows | `cells_write`, `rows_append`, `rows_write`, `rows_modify`, `rows_insert`, `rows_delete`, `row_dimensions_set`, `table_write` |
+| Columns | `columns_insert`, `columns_delete`, `columns_modify`, `column_dimensions_set` |
 | Data Queries | `distinct_values`, `duplicates_find`, `blanks_find`, `errors_find` |
 | Formulas | `formula_set`, `formula_read`, `formula_copy`, `formula_fill_down`, `formula_fill_right`, `formula_to_values`, `array_formula_list` |
 | Names | `defined_names_list`, `defined_name_create`, `defined_name_delete`, `external_links_list` |
 | Tables | `table_list`, `table_create`, `table_resize`, `table_delete` |
 | Validation | `data_validation_list`, `data_validation_add`, `data_validation_remove` |
 | Merged Cells | `merged_cells_list`, `merge_cells`, `unmerge_cells` |
-| Conditional Formatting | `conditional_formatting_list`, `conditional_formatting_add`, `conditional_formatting_remove` |
+| Formatting | `range_style_set` (font, fill, borders, alignment, wrapping, rotation, indentation, and number formats), `conditional_formatting_list`, `conditional_formatting_add`, `conditional_formatting_remove` |
 | Export / Import | `sheet_to_csv`, `range_to_csv`, `csv_to_sheet`, `sheet_to_json`, `json_to_sheet` |
 | Diff | `sheet_diff`, `workbook_diff` |
 | Images | `image_add`, `image_list`, `image_remove` |

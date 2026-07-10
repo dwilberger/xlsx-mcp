@@ -8,6 +8,7 @@ from mcp.server.fastmcp import FastMCP
 
 from xlsx_agent.core.cell import cell_read as core_cell_read
 from xlsx_agent.core.cell import cell_write as core_cell_write
+from xlsx_agent.core.columns import column_dimensions_set as core_column_dimensions_set
 from xlsx_agent.core.columns import columns_delete as core_columns_delete
 from xlsx_agent.core.columns import columns_insert as core_columns_insert
 from xlsx_agent.core.comments import comment_add as core_comment_add
@@ -57,6 +58,7 @@ from xlsx_agent.core.print_area import print_titles_set as core_print_titles_set
 from xlsx_agent.core.range import range_clear as core_range_clear
 from xlsx_agent.core.range import range_write as core_range_write
 from xlsx_agent.core.read import range_read as core_range_read
+from xlsx_agent.core.rows import row_dimensions_set as core_row_dimensions_set
 from xlsx_agent.core.rows import rows_delete as core_rows_delete
 from xlsx_agent.core.rows import rows_insert as core_rows_insert
 from xlsx_agent.core.rows import rows_write as core_rows_write
@@ -93,6 +95,7 @@ from xlsx_agent.schemas.advanced import (
     BlanksFindRequest,
     CellReadRequest,
     CellWriteRequest,
+    ColumnDimensionsSetRequest,
     ColumnsDeleteRequest,
     ColumnsInsertRequest,
     ColumnsModifyRequest,
@@ -141,6 +144,7 @@ from xlsx_agent.schemas.advanced import (
     RangeStyleSetRequest,
     RangeToCsvRequest,
     RangeWriteRequest,
+    RowDimensionsSetRequest,
     RowsDeleteRequest,
     RowsInsertRequest,
     RowsModifyRequest,
@@ -440,12 +444,19 @@ def range_style_set(
     font_color: str | None = None,
     number_format: str | None = None,
     alignment: str | None = None,
+    vertical_alignment: str | None = None,
+    wrap_text: bool | None = None,
+    text_rotation: int | None = None,
+    shrink_to_fit: bool | None = None,
+    indent: int | None = None,
+    border_style: str | None = None,
+    border_color: str | None = None,
 ) -> dict[str, Any]:
     """Apply font and cell styling to a range."""
     return _execute(
-        {"workbook_id": workbook_id, "sheet": sheet, "range": range, "font_name": font_name, "font_size": font_size, "bold": bold, "italic": italic, "underline": underline, "fill_color": fill_color, "font_color": font_color, "number_format": number_format, "alignment": alignment},
+        {"workbook_id": workbook_id, "sheet": sheet, "range": range, "font_name": font_name, "font_size": font_size, "bold": bold, "italic": italic, "underline": underline, "fill_color": fill_color, "font_color": font_color, "number_format": number_format, "alignment": alignment, "vertical_alignment": vertical_alignment, "wrap_text": wrap_text, "text_rotation": text_rotation, "shrink_to_fit": shrink_to_fit, "indent": indent, "border_style": border_style, "border_color": border_color},
         RangeStyleSetRequest,
-        lambda request: core_range_style_set(store, workbook_id=request.workbook_id, sheet=request.sheet, range=request.range, font_name=request.font_name, font_size=request.font_size, bold=request.bold, italic=request.italic, underline=request.underline, fill_color=request.fill_color, font_color=request.font_color, number_format=request.number_format, alignment=request.alignment),
+        lambda request: core_range_style_set(store, workbook_id=request.workbook_id, sheet=request.sheet, range=request.range, font_name=request.font_name, font_size=request.font_size, bold=request.bold, italic=request.italic, underline=request.underline, fill_color=request.fill_color, font_color=request.font_color, number_format=request.number_format, alignment=request.alignment, vertical_alignment=request.vertical_alignment, wrap_text=request.wrap_text, text_rotation=request.text_rotation, shrink_to_fit=request.shrink_to_fit, indent=request.indent, border_style=request.border_style, border_color=request.border_color),
     )
 
 
@@ -513,6 +524,23 @@ def rows_delete(workbook_id: str, sheet: str, start_row: int, count: int = 1) ->
 
 
 @mcp.tool()
+def row_dimensions_set(
+    workbook_id: str,
+    sheet: str,
+    start_row: int,
+    count: int = 1,
+    height: float | None = None,
+    hidden: bool | None = None,
+) -> dict[str, Any]:
+    """Set height or visibility for consecutive rows."""
+    return _execute(
+        {"workbook_id": workbook_id, "sheet": sheet, "start_row": start_row, "count": count, "height": height, "hidden": hidden},
+        RowDimensionsSetRequest,
+        lambda request: core_row_dimensions_set(store, workbook_id=request.workbook_id, sheet=request.sheet, start_row=request.start_row, count=request.count, height=request.height, hidden=request.hidden),
+    )
+
+
+@mcp.tool()
 def table_write(
     workbook_id: str,
     sheet: str,
@@ -549,6 +577,23 @@ def columns_delete(workbook_id: str, sheet: str, start_column: int | str, count:
         {"workbook_id": workbook_id, "sheet": sheet, "start_column": start_column, "count": count},
         ColumnsDeleteRequest,
         lambda request: core_columns_delete(store, workbook_id=request.workbook_id, sheet=request.sheet, start_column=request.start_column, count=request.count),
+    )
+
+
+@mcp.tool()
+def column_dimensions_set(
+    workbook_id: str,
+    sheet: str,
+    start_column: int | str,
+    count: int = 1,
+    width: float | None = None,
+    hidden: bool | None = None,
+) -> dict[str, Any]:
+    """Set width or visibility for consecutive columns."""
+    return _execute(
+        {"workbook_id": workbook_id, "sheet": sheet, "start_column": start_column, "count": count, "width": width, "hidden": hidden},
+        ColumnDimensionsSetRequest,
+        lambda request: core_column_dimensions_set(store, workbook_id=request.workbook_id, sheet=request.sheet, start_column=request.start_column, count=request.count, width=request.width, hidden=request.hidden),
     )
 
 
@@ -852,12 +897,29 @@ def conditional_formatting_list(workbook_id: str, sheet: str) -> dict[str, Any]:
 
 
 @mcp.tool()
-def conditional_formatting_add(workbook_id: str, sheet: str, range: str, type: str, formula: str | None = None, priority: int = 1) -> dict[str, Any]:
+def conditional_formatting_add(
+    workbook_id: str,
+    sheet: str,
+    range: str,
+    type: str,
+    formula: str | None = None,
+    formula2: str | None = None,
+    operator: str = "equal",
+    priority: int = 1,
+    fill_color: str | None = None,
+    font_color: str | None = None,
+    stop_if_true: bool | None = None,
+    min_color: str = "FFF8696B",
+    mid_color: str = "FFFFEB84",
+    max_color: str = "FF63BE7B",
+    data_bar_color: str = "FF638EC6",
+    icon_style: str = "3TrafficLights1",
+) -> dict[str, Any]:
     """Add a conditional formatting rule to a range."""
     return _execute(
-        {"workbook_id": workbook_id, "sheet": sheet, "range": range, "type": type, "formula": formula, "priority": priority},
+        {"workbook_id": workbook_id, "sheet": sheet, "range": range, "type": type, "formula": formula, "formula2": formula2, "operator": operator, "priority": priority, "fill_color": fill_color, "font_color": font_color, "stop_if_true": stop_if_true, "min_color": min_color, "mid_color": mid_color, "max_color": max_color, "data_bar_color": data_bar_color, "icon_style": icon_style},
         ConditionalFormattingAddRequest,
-        lambda request: core_conditional_formatting_add(store, workbook_id=request.workbook_id, sheet=request.sheet, range=request.range, type=request.type, formula=request.formula, priority=request.priority),
+        lambda request: core_conditional_formatting_add(store, workbook_id=request.workbook_id, sheet=request.sheet, range=request.range, type=request.type, formula=request.formula, formula2=request.formula2, operator=request.operator, priority=request.priority, fill_color=request.fill_color, font_color=request.font_color, stop_if_true=request.stop_if_true, min_color=request.min_color, mid_color=request.mid_color, max_color=request.max_color, data_bar_color=request.data_bar_color, icon_style=request.icon_style),
     )
 
 

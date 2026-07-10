@@ -2,6 +2,14 @@
 
 All notable public changes to this project are documented here.
 
+## Unreleased
+
+### Added
+
+- Expanded `range_style_set` with borders, vertical alignment, wrapping, text rotation, indentation, and shrink-to-fit.
+- Added `row_dimensions_set` and `column_dimensions_set` for row heights, column widths, and visibility.
+- Expanded conditional formatting with styled cell and formula rules, color scales, data bars, icon sets, operators, and explicit priorities.
+
 ## 1.0.0 - 2026-06-16
 
 Initial public release.
